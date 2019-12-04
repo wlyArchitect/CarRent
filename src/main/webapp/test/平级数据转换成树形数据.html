@@ -1,0 +1,49 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+    <title>平级数据转换成树形数据</title>
+</head>
+<body>
+<script type="text/javascript">
+    var data=[
+        {element:'图片',id:'1',pid:'0'},//count=1
+        {element:'大图片',id:'2',pid:'1'},
+        {element:'png',id:'3',pid:'2'},
+        {element:'jpeg',id:'4',pid:'2'},
+        {element:'gif',id:'5',pid:'2'},
+        {element:'gif11',id:'6',pid:'5'},
+        {element:'gif111',id:'7',pid:'6'},
+        {element:'gif222',id:'8',pid:'6'},
+        {element:'文字',id:'9',pid:'0'},
+        {element:'宋体',id:'10',pid:'9'},
+        {element:'宋体111',id:'11',pid:'10'},
+        {element:'宋体222',id:'12',pid:'10'},
+        {element:'黑体',id:'13',pid:'9'},
+    ]
+    function transTreeData(items){
+        if(items.length>0){
+            var curPid= 0 //pid=0，为最上层节点 ，即无父节点
+            var parent=findChild(curPid);//数组
+            return parent;
+        }else{
+            return [];
+        }
+    }
+    //找子节点
+    function findChild (curPid){
+        var _arr = [];
+        var items=data;
+        var length=items.length;
+        for(var i = 0; i < length; i++){
+            if(items[i].pid == curPid){
+                var _obj = items[i];
+                _obj.children = findChild(_obj.id);
+                _arr.push(_obj);
+            }
+        }
+        return _arr;
+    }
+    console.log(transTreeData(data));
+</script>
+</body>
+</html>

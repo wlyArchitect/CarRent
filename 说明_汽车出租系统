@@ -1,0 +1,47 @@
+1.项目环境的搭建
+2.用户登陆
+3.工作台开发
+4.初始化菜单数据
+5.加载左边的菜单项
+6.RBAC(Role-Based Access Control)基于角色的访问控制,
+  后续使用shiro框架
+
+7.
+//todo -----------------------------------------
+补充:
+监听器:ServletContextListener接口
+ 1)监听ServletContext 对象被创建或者销毁的Servlet监听器
+  只需要实现ServletContextListener接口,并实现其中的方法即可
+  最后在web.xml进行配置<listener>  或者使用注解@WebListener
+../sys/toMenuManager
+resources/page/404.html
+
+2)d-tree返回是一个对象,该组件
+  菜单管理左侧是使用(层级)关系的json格式
+  而菜单项左边界面是使用d-tree解析使用标准(一级)的json格式(list的格式)
+
+3)逆向工程的使用的两种方式
+4)mybatis中使用pageHelper插件的分页
+5)RBAC的理解:
+  菜单(能操作的区域)--->角色(也就是权限等级,等级不同菜单不同)--->用户(有x个权限等级)
+  而这些又是多对多的关系,所以衍生了两张中间表
+  menu   (role_menu)   role    (role_user)       user
+  对menu表进行操作的话,不仅menu表发生改变,role_menu表也发生改变
+  对role表进行操作的话,不仅role表发生改变,role_menu,role_user表也发生改变
+6)d-tree的操作,对json格式数据的操作,layui学习!!!
+//todo ----------------------------------------------------------
+问题:对于查询的结果不是树展开,查询都是返回List集合
+     而只是存放在表格的,查询都是直接返回DataGridViewUtils
+答:查看tree的数据格式
+   1)最开始的左导航树:
+     首先要明白它是直接导入外部navs.json的数据
+     它是一个数组,接着是标准数据格式,内部父套子
+     所以我们需要创建一个类专门存放这种数据
+   2)菜单管理的左导航树:
+     首先要明白它的数据是来自于数据库的
+     从数据库中查询出的数据是没有层级关系的,而是直接List集合
+     所以我们使用treed的数据格式中的最后一种layui+list数据格式
+   3)目前后续的tree也是参照2)的方式
+问题:查看pageHelper分页插件,一级掌握分页原理
+问题:sql语句
+问题:ssm的回顾

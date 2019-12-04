@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- 开启注解扫描:只希望处理dao service层
+           controller层不需要spring框架处理
+        -->
+    <context:component-scan base-package="com.wh">
+        <!-- 配置哪些不处理的:annocation表示带有的注解   -->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 扫描task包下的,用于定时清理_temp文件 -->
+    <context:component-scan base-package="com.wh.sys.task"/>
+
+    <!-- TODO 1.Spring框架整合Mybatis框架 -->
+    <!-- 读取jdbc.properties配置文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--
+         使用阿里的druid数据源
+         也使用Ibatis框架的pooled类型的数据源 org.apache.ibatis.datasource.pooled.PooledDataSource
+         init-method="init" 初始化数据源
+    -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init">
+        <property name="driverClassName" value="${mysql.driver}"/>
+        <property name="url" value="${mysql.url}"/>
+        <property name="username" value="${mysql.username}"/>
+        <property name="password" value="${mysql.password}"/>
+        <!-- 设置初始化连接池大小 -->
+        <property name="initialSize" value="5"></property>
+        <!-- 最大连接数 -->
+        <property name="maxActive" value="10"></property>
+        <!-- 设置等待时间 -->
+        <property name="maxWait" value="5000"></property>
+        <!-- 配置StatFilter,用于统计监控信息:sql监控,URI监控 -->
+        <property name="filters" value="stat"></property>
+
+    </bean>
+    <!-- 配置SqlSessionFactory工厂:可以创建SqlSession,获取代理对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 引入上面的数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- sqlMapper配置文件的设置 -->
+        <property name="mapperLocations" value="classpath:mapper/*/*Mapper.xml"/>
+        <!-- 插件:分页插件 -->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor"></bean>
+            </array>
+        </property>
+    </bean>
+    <!-- 配置Dao层的接口所在包:生成哪些接口的代理对象 -->
+    <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- basePackage基本包的名称:那么这样就扫描到了包 -->
+        <property name="basePackage">
+            <value>
+                com.wh.bus.mapper
+                com.wh.sys.mapper
+            </value>
+        </property>
+    </bean>
+    <!--
+     TODO 2.配置spring框架声明事务管理
+    -->
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 配置事务通知 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 以add等开头的方法名需要事务 -->
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="change*" propagation="REQUIRED"/>
+            <tx:method name="reset*" propagation="REQUIRED"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="load*" read-only="true"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+    <!-- 配置AOP织入:-->
+    <aop:config>
+        <!-- 声明切面 -->
+        <aop:pointcut expression="execution(* com.wh.sys.service.impl.*.*(..))" id="pc1"/>
+        <aop:pointcut expression="execution(* com.wh.bus.service.impl.*.*(..))" id="pc2"/>
+        <!-- 织入 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc1"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc2"/>
+    </aop:config>
+</beans>
