@@ -59,6 +59,7 @@
             <value>
                 com.wh.bus.mapper
                 com.wh.sys.mapper
+                com.wh.stat.mapper
             </value>
         </property>
     </bean>
@@ -89,8 +90,11 @@
         <!-- 声明切面 -->
         <aop:pointcut expression="execution(* com.wh.sys.service.impl.*.*(..))" id="pc1"/>
         <aop:pointcut expression="execution(* com.wh.bus.service.impl.*.*(..))" id="pc2"/>
+        <aop:pointcut expression="execution(* com.wh.stat.service.impl.*.*(..))" id="pc3"/>
         <!-- 织入 -->
         <aop:advisor advice-ref="txAdvice" pointcut-ref="pc1"/>
         <aop:advisor advice-ref="txAdvice" pointcut-ref="pc2"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc3"/>
+
     </aop:config>
 </beans>

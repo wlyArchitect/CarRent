@@ -29,6 +29,14 @@ resources/page/404.html
   对menu表进行操作的话,不仅menu表发生改变,role_menu表也发生改变
   对role表进行操作的话,不仅role表发生改变,role_menu,role_user表也发生改变
 6)d-tree的操作,对json格式数据的操作,layui学习!!!
+7)统计分析:
+    1.统计新式:表格 图表Echarts插件
+    2.统计的信息:
+     sys_customer表:地址,性别,职位,录入时间(统计客户的增长量)
+     bus_car表:汽车类型,出租状态
+     bus_rent表:车牌号(租的次数),操作员(统计业绩)
+     bus_check表:赔付金额(统计车量的违章加修理支出)
+
 //todo ----------------------------------------------------------
 问题:对于查询的结果不是树展开,查询都是返回List集合
      而只是存放在表格的,查询都是直接返回DataGridViewUtils
@@ -45,3 +53,5 @@ resources/page/404.html
 问题:查看pageHelper分页插件,一级掌握分页原理
 问题:sql语句
 问题:ssm的回顾
+
+
